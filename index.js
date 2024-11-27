@@ -30,9 +30,6 @@ app.set("views", path.join(__dirname, "views")); // Ensure the views path is set
 // Initialize multer for handling file uploads
 const upload = multer();
 
-// Import the 'path' module to handle file paths
-//const path = require("path");
-
 // Import the custom data handling module
 const contentService = require("./content-service");
 
