@@ -123,55 +123,51 @@ app.get("/articles/add", (req, res) => {
 });
 
 // Route to handle article form submission with image upload
-app.post("/articles/add", upload.single("featureImage"), (req, res) => {
-  if (req.file) {
-    let streamUpload = (req) => {
-      return new Promise((resolve, reject) => {
-        let stream = cloudinary.uploader.upload_stream(
-          { folder: "articles" },
-          (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
-          }
-        );
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-    };
+app.post("/articles/add", upload.single("featureImage"), async (req, res) => {
+  try {
+    let imageUrl = "";
 
-    async function uploadToCloudinary(req) {
-      let result = await streamUpload(req);
-      return result.url;
+    if (req.file) {
+      // Upload the image to Cloudinary
+      imageUrl = await uploadToCloudinary(req);
     }
 
-    uploadToCloudinary(req)
-      .then((imageUrl) => {
-        processArticle(imageUrl);
-      })
-      .catch((err) => {
-        res.status(500).json({ message: "Image upload failed", error: err });
-      });
-  } else {
-    processArticle("");
-  }
-
-  function processArticle(imageUrl) {
+    // Prepare the article data
     const articleData = {
       title: req.body.title,
       content: req.body.content,
       category: req.body.category,
       published: req.body.published === "on",
-      featureImage: imageUrl || "",
-      author: req.body.author,  // Add author to article data
+      featureImage: imageUrl || "",  // Use uploaded image URL if available
+      author: req.body.author,
       postDate: new Date().toISOString(),
     };
 
-    contentService.addArticle(articleData)
-      .then(() => res.redirect("/articles"))
-      .catch((err) =>
-        res.status(500).json({ message: "Failed to add article", error: err })
-      );
+    // Add the article to the database
+    await contentService.addArticle(articleData);
+
+    // Redirect to the articles page after successfully adding the article
+    res.redirect("/articles");
+
+  } catch (err) {
+    console.error("Error adding article:", err);
+    res.status(500).json({ message: "Failed to add article", error: err });
   }
 });
+
+// Function to upload an image to Cloudinary
+async function uploadToCloudinary(req) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "articles" },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.url);
+      }
+    );
+    streamifier.createReadStream(req.file.buffer).pipe(stream);
+  });
+}
 
 // Initialize the data in the storeData module, then start the server
 contentService.initialize()
