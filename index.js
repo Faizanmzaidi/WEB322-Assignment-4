@@ -1,6 +1,6 @@
 // Import the Express library
 const express = require("express");
-const path = require('path');
+const path = require("path");
 
 // Import other necessary libraries
 const multer = require("multer");
@@ -23,9 +23,6 @@ const app = express();
 
 // Set EJS as the view engine
 app.set("view engine", "ejs");
-
-// Print the views directory to check if it's correct
-console.log("Views directory:", path.join(__dirname, "views"));
 
 // Set the views directory to the correct path
 app.set("views", path.join(__dirname, "views")); // Ensure the views path is set
@@ -128,8 +125,11 @@ app.post("/articles/add", upload.single("featureImage"), async (req, res) => {
     let imageUrl = "";
 
     if (req.file) {
-      // Upload the image to Cloudinary
+      console.log("Uploading image to Cloudinary...");
       imageUrl = await uploadToCloudinary(req);
+      console.log("Image uploaded successfully:", imageUrl);
+    } else {
+      console.log("No feature image provided.");
     }
 
     // Prepare the article data
@@ -138,15 +138,17 @@ app.post("/articles/add", upload.single("featureImage"), async (req, res) => {
       content: req.body.content,
       category: req.body.category,
       published: req.body.published === "on",
-      featureImage: imageUrl || "",  // Use uploaded image URL if available
+      featureImage: imageUrl,
       author: req.body.author,
       postDate: new Date().toISOString(),
     };
 
+    console.log("Saving article:", articleData);
+
     // Add the article to the database
     await contentService.addArticle(articleData);
 
-    // Redirect to the articles page after successfully adding the article
+    console.log("Article added successfully. Redirecting to /articles...");
     res.redirect("/articles");
 
   } catch (err) {
