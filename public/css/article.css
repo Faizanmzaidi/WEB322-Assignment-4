@@ -1,0 +1,89 @@
+/* article.css */
+body{
+    margin: 0%;
+    padding: 0%;
+}
+
+/* Styling the article container */
+.article-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Article title styling */
+  .article-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Article metadata styling */
+  .article-meta {
+    display: flex;
+    flex-direction: column; /* Stack metadata items vertically */
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  
+  /* Each metadata item styling */
+  .meta-item {
+    font-size: 1.2rem;
+    color: #555;
+  }
+  
+  .article-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  /* Styling for the article's border */
+  .article-border {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Header Styling */
+  header {
+    background-color: #007bff;
+    padding: 25px 0; /* Increased padding to give more height */
+    color: white;
+    text-align: center; /* Centers the content in the header */
+    width: 100%; /* Ensures the header spans the full width of the viewport */
+  }
+  
+  header .nav {
+    display: inline-flex; /* Use inline-flex to align items horizontally */
+    gap: 28px; /* Adds space between links */
+    align-items: center;
+    text-align: center;
+  }
+  
+  header .nav-link {
+    color: white;
+    font-size: 1.1rem;
+    text-decoration: none; /* Removes underline from links */
+
+  }
+  
+  /* Footer Styling */
+  footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  footer a {
+    color: #ffdf00;
+  }
+  
+  footer a:hover {
+    color: #fff;
+  }
+  

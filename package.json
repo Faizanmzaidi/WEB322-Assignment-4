@@ -1,0 +1,20 @@
+{
+  "name": "web322_as3_solution",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "enc": "5363616E6C616E205765623332322041533320463234",
+  "description": "",
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-handlebars": "^8.0.1",
+    "multer": "^1.4.5-lts.1",
+    "streamifier": "^0.1.1"
+  }
+}
