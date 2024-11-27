@@ -6,6 +6,7 @@ const { parse } = require("path");
 let categories = [];
 let articles = [];
 
+
 // Function to initialize data by loading categories and articles from JSON files
 function initialize() {
   return new Promise((resolve, reject) => {
