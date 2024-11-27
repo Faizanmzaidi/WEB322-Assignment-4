@@ -23,6 +23,9 @@ const app = express();
 // Set EJS as the view engine
 app.set("view engine", "ejs");
 
+// Set the views directory to the correct path
+app.set("views", path.join(__dirname, "views")); // Ensure the views path is set
+
 // Initialize multer for handling file uploads
 const upload = multer();
 
@@ -36,7 +39,7 @@ const contentService = require("./content-service");
 const HTTP_PORT = process.env.PORT || 3838;
 
 // Serve static files from the "public" directory (e.g., CSS, JS files, images)
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware to parse incoming requests with JSON payloads
 app.use(express.json()); // For parsing application/json
@@ -172,12 +175,13 @@ app.post("/articles/add", upload.single("featureImage"), (req, res) => {
 // Initialize the data in the storeData module, then start the server
 contentService.initialize()
   .then(() => {
-    app.listen(HTTP_PORT);
-    console.log("server listening @ http://localhost:" + HTTP_PORT);
+    app.listen(HTTP_PORT, () => {
+      console.log("server listening @ http://localhost:" + HTTP_PORT);
+    });
   })
   .catch((err) => {
     console.error("Failed to initialize data: ", err);
   });
 
-// Export the Express app instance (useful for testing or external  usage)
+// Export the Express app instance (useful for testing or external usage)
 module.exports = app;
