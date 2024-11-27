@@ -1,24 +1,30 @@
 // Import the 'fs' module for interacting with the file system
 const fs = require("fs");
-const { parse } = require("path");
 
 // Arrays to store categories and articles data loaded from JSON files
 let categories = [];
 let articles = [];
-
 
 // Function to initialize data by loading categories and articles from JSON files
 function initialize() {
   return new Promise((resolve, reject) => {
     // Read the categories data from categories.json file
     fs.readFile("./data/categories.json", "utf8", (err, cat) => {
-      if (err) return reject(err); // Reject the promise if an error occurs during file read
-      categories = JSON.parse(cat); // Parse and store categories data
+      if (err) return reject("Failed to load categories: " + err); // Reject with an error message
+      try {
+        categories = JSON.parse(cat); // Parse and store categories data
+      } catch (parseError) {
+        return reject("Invalid JSON in categories file: " + parseError);
+      }
 
       // Nested readFile for articles.json
       fs.readFile("./data/articles.json", "utf8", (err, art) => {
-        if (err) return reject(err); // Reject the promise if an error occurs during file read
-        articles = JSON.parse(art); // Parse and store articles data
+        if (err) return reject("Failed to load articles: " + err); // Reject with an error message
+        try {
+          articles = JSON.parse(art); // Parse and store articles data
+        } catch (parseError) {
+          return reject("Invalid JSON in articles file: " + parseError);
+        }
 
         resolve(); // Initialization complete
       });
@@ -29,21 +35,22 @@ function initialize() {
 // Function to add a new article
 function addArticle(articleData) {
   return new Promise((resolve, reject) => {
+    // Validate the required fields
     if (!articleData.title || !articleData.content || !articleData.category) {
-      return reject("Missing required article data");
+      return reject("Missing required article data (title, content, or category)");
     }
 
-    articleData.published = articleData.published ? true : false;
-    articleData.id = articles.length + 1; // Set ID to the current length + 1
-
-    // Set the postDate for the article (use current date if not provided)
+    // Prepare article data with default values
+    articleData.published = !!articleData.published; // Convert to boolean
+    articleData.id = articles.length > 0 ? articles[articles.length - 1].id + 1 : 1; // Set ID incrementally
     articleData.postDate = articleData.postDate || new Date().toISOString(); // Use current date if not provided
 
-    articles.push(articleData); // Add the article to the articles array
+    // Add the article to the articles array
+    articles.push(articleData);
 
-    // Optionally save the articles data back to the file system
+    // Save the updated articles data back to the JSON file
     fs.writeFile("./data/articles.json", JSON.stringify(articles, null, 2), (err) => {
-      if (err) return reject("Error saving article data");
+      if (err) return reject("Error saving article data: " + err); // Reject with an error message
       resolve(articleData); // Return the added article
     });
   });
@@ -52,9 +59,7 @@ function addArticle(articleData) {
 // Function to get articles by category
 function getArticlesByCategory(category) {
   return new Promise((resolve, reject) => {
-    const filteredArticles = articles.filter(
-      (article) => article.category == parseInt(category)
-    );
+    const filteredArticles = articles.filter((article) => article.category == category);
     if (filteredArticles.length > 0) resolve(filteredArticles);
     else reject("No articles found for the given category");
   });
@@ -62,8 +67,8 @@ function getArticlesByCategory(category) {
 
 // Function to get all articles
 function getAllArticles() {
-  return new Promise((resolve, reject) => {
-    resolve(articles);
+  return new Promise((resolve) => {
+    resolve(articles); // Return all articles
   });
 }
 
@@ -71,9 +76,7 @@ function getAllArticles() {
 function getArticlesByMinDate(minDateStr) {
   return new Promise((resolve, reject) => {
     const minDate = new Date(minDateStr);
-    const filteredArticles = articles.filter(
-      (article) => new Date(article.postDate) >= minDate
-    );
+    const filteredArticles = articles.filter((article) => new Date(article.postDate) >= minDate);
     if (filteredArticles.length > 0) resolve(filteredArticles);
     else reject("No articles found from the given date");
   });
@@ -95,12 +98,10 @@ function getPublishedArticles() {
 
 // Function to get all categories
 function getCategories() {
-  return Promise.resolve(categories); // Return the categories array as a resolved promise
-}
-
-// Function to get all articles (returning all articles)
-function getArticles() {
-  return Promise.resolve(articles); // Return the articles array as a resolved promise
+  return new Promise((resolve, reject) => {
+    if (categories.length > 0) resolve(categories);
+    else reject("No categories available");
+  });
 }
 
 // Export the functions as an object to make them available to other files
@@ -108,9 +109,9 @@ module.exports = {
   initialize,
   getAllArticles,
   getCategories,
-  getArticles,
   addArticle,
   getArticlesByCategory,
   getArticlesByMinDate,
   getArticleById,
+  getPublishedArticles,
 };
