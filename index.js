@@ -115,7 +115,7 @@ app.get("/article/:id", (req, res) => {
 app.get("/articles/add", (req, res) => {
   contentService.getCategories()
     .then((categories) => {
-      res.render("addarticle", { categories }); // Pass categories to the view
+      res.render("addArticle", { categories }); // Pass categories to the view
     })
     .catch((err) => {
       res.status(500).json({ message: "Unable to fetch categories" });
