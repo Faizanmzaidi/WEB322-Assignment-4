@@ -24,6 +24,9 @@ const app = express();
 // Set EJS as the view engine
 app.set("view engine", "ejs");
 
+// Print the views directory to check if it's correct
+console.log("Views directory:", path.join(__dirname, "views"));
+
 // Set the views directory to the correct path
 app.set("views", path.join(__dirname, "views")); // Ensure the views path is set
 
